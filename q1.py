@@ -11,6 +11,7 @@ class NFA:
         self.start_states = start_states
         self.final_states = final_states
 
+
     def get_dict(self):
         N = {}
         N["states"] = self.states
@@ -33,12 +34,20 @@ def powerset(states):
 def get_final_states(N):
     return []
     
-
+def E(s, N):
+    # assuming one \eps depth
+    next_states = [s]
+    for t in N.transition_matrix:
+        if t[0] == s and t[1] == 'e':
+            next_states.append(t[2])
+    return next_states
 
 def get_DFA_from_NFA(N):
     states = [s for s in powerset(N.states)]
     letters = N.letters
-    start_states = N.start_states
+    start_states = []
+    for s in N.start_states:
+        start_states.extend(E(s, N))
     
     final_states = []
     for R in states:
@@ -50,17 +59,19 @@ def get_DFA_from_NFA(N):
     transition_matrix = []
     for R in states:
         for a in letters:
-            next_states = []
+            next_states = set()
             for r in R:
                 for t in N.transition_matrix:
                     if t[0] == r and t[1] == a:
-                        next_states.append(t[2])
+                        for s in E(t[2], N):
+                            next_states.add(s)
             if len(next_states):
+                next_states = list(next_states)
                 transition_matrix.append([R, a, sorted(next_states)])
-    return NFA(states, letters, transition_matrix, start_states, final_states)
+    return NFA(list(states), letters, transition_matrix, start_states, final_states)
 
 def main():
-    N = NFA(["Q1", "Q2", "Q3"], ["a", "b"], [["Q1", "b", "Q2"], ["Q2", "a", "Q2"], ["Q2", "a", "Q3"], ["Q2", "b", "Q3"], ["Q3", "a", "Q1"]], ["Q1"], ["Q1"])
+    N = NFA(["Q1", "Q2", "Q3"], ["a", "b"], [["Q1", "b", "Q2"], ["Q1", "e", "Q3"], ["Q2", "a", "Q2"], ["Q2", "a", "Q3"], ["Q2", "b", "Q3"], ["Q3", "a", "Q1"]], ["Q1"], ["Q1"])
     print(get_DFA_from_NFA(N).get_dict()["transition_matrix"])
 
 if __name__ == "__main__":
