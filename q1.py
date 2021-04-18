@@ -264,6 +264,36 @@ def drawGraph(automata, file = ""):
     finally:
         f.close()
 
+def get_state(s):
+    return ["Q" + str(s)]
+
+def transform(nfa):
+    states = []
+    for s in nfa.states:
+        states.append(get_state(s))
+    letters = []
+    for s in nfa.language:
+        letters.append(s)
+    transition_function = []
+    for fromstate, tostates in nfa.transitions.items():
+        for state in tostates:
+            for char in tostates[state]:
+                if char == Automata.epsilon():
+                    char = "$"
+                transition_function.append([get_state(fromstate), char, get_state(state)])
+    start_states = [get_state(nfa.startstate)]
+    final_states = []
+    for s in nfa.finalstates:
+        final_states.append(get_state(s))
+    d = {}
+    d["states"] = states
+    d["letters"] = letters
+    d["start_states"] = start_states
+    d["final_states"] = final_states
+    d["transition_function"] = transition_function
+    return d
+
+
 def main():
     assert len(sys.argv) == 3, "invalid args"
     inp = sys.argv[1]
@@ -276,9 +306,12 @@ def main():
         regex = obj["regex"]
 
     nfaObj = NFAfromRegex(regex)
-    nfaObj.displayNFA()
+    # nfaObj.displayNFA()
     nfa = nfaObj.getNFA()
-    drawGraph(nfa, "nfa")
+    d = transform(nfa)
+    with open(out, 'w+') as f:
+        json.dump(d, f, indent=4)
+    # drawGraph(nfa, "nfa")
 
 if __name__ == "__main__":
     main()

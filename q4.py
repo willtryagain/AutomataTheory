@@ -91,6 +91,22 @@ class Automata:
             rebuild.addfinalstates(pos[s])
         return rebuild     
 
+    def getDotFile(self):
+        dotFile = "digraph DFA {\nrankdir=LR\n"
+        if len(self.states) != 0:
+            dotFile += "root=s1\nstart [shape=point]\nstart->s%d\n" % self.startstate
+            for state in self.states:
+                if state in self.finalstates:
+                    dotFile += "s%d [shape=doublecircle]\n" % state
+                else:
+                    dotFile += "s%d [shape=circle]\n" % state
+            for fromstate, tostates in self.transitions.items():
+                for state in tostates:
+                    for char in tostates[state]:
+                        dotFile += 's%d->s%d [label="%s"]\n' % (fromstate, state, char)
+        dotFile += "}"
+        return dotFile 
+
 
 class BuildAutomata:
 
@@ -253,6 +269,8 @@ class DFA:
         # self.buildDFA(nfa)
         self.minimise()
 
+    def displayDFA(self):
+        self.dfa.display()
 
     def minimise(self):
         states = list(self.dfa.states)
@@ -323,7 +341,15 @@ class DFA:
 
         if len(equivalent) != len(states):
             self.dfa = self.dfa.newBuildFromEquivalentStates(equivalent, pos)
-
+def drawGraph(automata, file = ""):
+    """From https://github.com/max99x/automata-editor/blob/master/util.py"""
+    f = popen(r"dot -Tpng -o graph%s.png" % file, 'w')
+    try:
+        f.write(automata.getDotFile())
+    except:
+        raise BaseException("Error creating graph")
+    finally:
+        f.close()
 
 
 def main():
@@ -342,8 +368,24 @@ def main():
     new_states = []
     for s in d["states"]:
         new_states.append(" ".join(str(a) for a in s))
-    dfa.states = new_states
-    dfa.display()
+    dfa.states = set(new_states)
+    for t in d["transition_function"]:
+        fromstate = " ".join(str(a) for a in t[0])
+        tostate = " ".join(str(a) for a in t[2])
+        dfa.addtransition(fromstate, tostate, t[1])
+    start = str(d["start_states"][0])
+
+    final_states = []
+    for s in d["final_states"]:
+        final_states.append(" ".join(str(a) for a in s))
+    dfa.setstartstate(start)
+    dfa.addfinalstates(final_states)
+    # drawGraph(dfa, "dfa")
+    dfa = DFA(dfa)
+    dfa.displayDFA()
+    # print(dfa)
+    # dfa.display()
+    
     # with open(out, 'w+') as f:
     #     json.dump(D.get_dict(), f, indent=4)
 
