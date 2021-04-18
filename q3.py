@@ -1,9 +1,41 @@
+import json
+import sys
+import os
+from itertools import chain, combinations
+# assuming no name conflict Q_.
+
+index = 1
+def get_name(): 
+    global index
+    name = "Q_" + str(index)
+    index += 1
+    return name
+
+class NFA:
+    def __init__(self, states=[], letters=[], transition_matrix=[], start_states=[], final_states=[]):
+        self.states = states
+        self.letters = letters
+        self.transition_matrix = transition_matrix
+        self.start_states = start_states
+        self.final_states = final_states
+
+
+    def get_dict(self):
+        N = {}
+        N["states"] = self.states
+        N["letters"] = self.letters
+        N["transition_matrix"] = self.transition_matrix
+        N["start_states"] = self.start_states
+        N["final_states"] = self.final_states
+        return N
+
+
 def find(state, D):
     
 
 def get_GNFA(D):
-    new_start = "q"
-    new_accept = "q1"
+    new_start = get_name()
+    new_accept = get_name()
     D.states.append(new_start, new_accept)
     # assuming single start state
     D.transition_matrix.append([new_start, "$", D.start_states[0]])

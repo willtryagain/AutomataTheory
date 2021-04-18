@@ -3,7 +3,6 @@ import sys
 import os
 from itertools import chain, combinations
 # ASSuminmg no e transitionss
-
 class NFA:
     def __init__(self, states=[], letters=[], transition_matrix=[], start_states=[], final_states=[]):
         self.states = states
