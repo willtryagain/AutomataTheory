@@ -56,6 +56,9 @@ class Automata:
                 self.addtransition(fromstate, state, tostates[state])
 
     def gettransitions(self, state, key):
+        """
+        if 
+        """
         if isinstance(state, int):
             state = [state]
         trstates = set()
@@ -273,7 +276,7 @@ def main():
         regex = obj["regex"]
 
     nfaObj = NFAfromRegex(regex)
-    # nfa.displayNFA()
+    nfaObj.displayNFA()
     nfa = nfaObj.getNFA()
     drawGraph(nfa, "nfa")
 
