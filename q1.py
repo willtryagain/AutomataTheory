@@ -265,7 +265,7 @@ def drawGraph(automata, file = ""):
         f.close()
 
 def get_state(s):
-    return ["Q" + str(s)]
+    return "Q" + str(s)
 
 def transform(nfa):
     states = []
@@ -306,7 +306,7 @@ def main():
         regex = obj["regex"]
 
     nfaObj = NFAfromRegex(regex)
-    # nfaObj.displayNFA()
+    nfaObj.displayNFA()
     nfa = nfaObj.getNFA()
     d = transform(nfa)
     with open(out, 'w+') as f:

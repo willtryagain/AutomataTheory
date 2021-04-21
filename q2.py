@@ -4,10 +4,10 @@ import os
 from itertools import chain, combinations
 # ASSuminmg no e transitionss
 class NFA:
-    def __init__(self, states=[], letters=[], transition_matrix=[], start_states=[], final_states=[]):
+    def __init__(self, states=[], letters=[], transition_function=[], start_states=[], final_states=[]):
         self.states = states
         self.letters = letters
-        self.transition_matrix = transition_matrix
+        self.transition_function = transition_function
         self.start_states = start_states
         self.final_states = final_states
 
@@ -16,7 +16,7 @@ class NFA:
         N = {}
         N["states"] = self.states
         N["letters"] = self.letters
-        N["transition_matrix"] = self.transition_matrix
+        N["transition_function"] = self.transition_function
         N["start_states"] = self.start_states
         N["final_states"] = self.final_states
         return N
@@ -37,7 +37,7 @@ def get_final_states(N):
 def E(s, N):
     # assuming one \eps depth
     next_states = [s]
-    for t in N.transition_matrix:
+    for t in N.transition_function:
         if t[0] == s and t[1] == '$':
             next_states.append(t[2])
     return next_states
@@ -45,10 +45,12 @@ def E(s, N):
 def get_DFA_from_NFA(N):
     # mutation problems
     D = NFA() 
-    D.states = [s for s in powerset(N.states)]
+    P = list(powerset(N.states))
+    P.reverse()
+    D.states = [s for s in P]
     D.letters = N.letters
     assert len(N.start_states) == 1, "can't handle NFA with more than 1 start state"
-    D.start_states = N.start_states
+    D.start_states = [N.start_states]
     
     for R in D.states:
         for s in N.final_states:
@@ -60,14 +62,14 @@ def get_DFA_from_NFA(N):
         for a in D.letters:
             next_states = set()
             for r in R:
-                for t in N.transition_matrix:
+                for t in N.transition_function:
                     if t[0] == r and t[1] == a:
                         next_states.add(t[2])
             if len(next_states):
                 next_states = list(next_states)
-                D.transition_matrix.append([R, a, sorted(next_states)])
+                D.transition_function.append([R, a, sorted(next_states)])
             else:
-                D.transition_matrix.append([R, a, []])
+                D.transition_function.append([R, a, []])
     return D
 
 def main():
