@@ -1,1 +1,1 @@
-# AutomataTheory
+the focus was on learing the concepts so here though code may have been inspired from an external source, it has not directly been copy pasted. The working of code can be explained.

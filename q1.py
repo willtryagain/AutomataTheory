@@ -13,7 +13,7 @@ class Automata:
 
     @staticmethod
     def epsilon():
-        return ":e:"
+        return "$"
 
     def setstartstate(self, state):
         self.startstate = state
@@ -76,10 +76,9 @@ class Automata:
             startnum += 1
         rebuild = Automata(self.language)
         rebuild.setstartstate(translations[self.startstate])
-        rebuild.addfinalstates(translations[self.finalstates[0]])
+        rebuild.addfinalstates(translations[self.finalstates[0]]) # only 1 ?
         for fromstate, tostates in self.transitions.items():
             for state in tostates:
-                # whu are we addomg index to action?
                 rebuild.addtransition(translations[fromstate], translations[state], tostates[state])
         return [rebuild, startnum]
 
@@ -168,6 +167,7 @@ class NFAfromRegex:
         self.closingBracket = ')'
         self.operators = [self.plus, self.dot]
         self.regex = regex
+        self.alphabet = []
         self.alphabet = [chr(i) for i in range(65, 91)]
         self.alphabet.extend([chr(i) for i in range(48, 58)])
         self.alphabet.extend([chr(i) for i in range(97, 123)])
@@ -191,6 +191,8 @@ class NFAfromRegex:
                 self.automata.append(BuildAutomata.plusstruct(b, a))
             elif operator == self.dot:
                 self.automata.append(BuildAutomata.dotstruct(b, a))
+            else:
+                raise ValueError
             
     def addOperatorToStack(self, char):
         while True:
@@ -231,6 +233,7 @@ class NFAfromRegex:
                     elif o in self.operators:
                         self.processOperator(o)
             elif char ==  self.star:
+                # (*, .*, +*, **)
                 if previous in self.operators or previous == self.openingBracket or previous == self.star:
                     raise Exception
                 self.processOperator(char)
@@ -308,10 +311,10 @@ def main():
     nfaObj = NFAfromRegex(regex)
     nfaObj.displayNFA()
     nfa = nfaObj.getNFA()
+    drawGraph(nfa, "nfa")
     d = transform(nfa)
     with open(out, 'w+') as f:
         json.dump(d, f, indent=4)
-    # drawGraph(nfa, "nfa")
 
 if __name__ == "__main__":
     main()
