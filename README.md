@@ -1,1 +1,3 @@
-the focus was on learing the concepts so here though code may have been inspired from an external source, it has not directly been copy pasted. The working of code can be explained.
+## Question 1
+
+The regex is evaluated using a stack. If operator is encountered we process it and append to the generated automata inside a

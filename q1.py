@@ -309,9 +309,9 @@ def main():
         regex = obj["regex"]
 
     nfaObj = NFAfromRegex(regex)
-    nfaObj.displayNFA()
+    # nfaObj.displayNFA()
     nfa = nfaObj.getNFA()
-    drawGraph(nfa, "nfa")
+    # drawGraph(nfa, "nfa")
     d = transform(nfa)
     with open(out, 'w+') as f:
         json.dump(d, f, indent=4)
