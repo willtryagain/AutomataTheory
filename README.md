@@ -14,6 +14,12 @@ Took inspiration from [here](https://github.com/sdht0/automata-from-regex).
 
 This method has been inspired by the textbook.
 
+## Question 3
+
+js2py 
+
+same dir
+
 
 ## Question 4
 <ol>
