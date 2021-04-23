@@ -36,9 +36,9 @@ class NFA:
         s += "]\n"
         return s
 
-    def getRegex(self):
+    def get_regex(self):
         automata = self.get_str()
-        with open("../noam.js") as f:
+        with open("./noam.js") as f:
             module = f.read()
         function_call = """
         function getRegex(automaton){
@@ -52,9 +52,9 @@ class NFA:
         """.replace("document.write", "return ")
         
         js = module + automata + function_call
-        print(automata + function_call)
+        # print(automata + function_call)
         result = js2py.eval_js(js)
-        return result
+        return {"regex": result}
 
 def main():
     assert len(sys.argv) == 3, "invalid args"
@@ -67,9 +67,8 @@ def main():
     # N = NFA(["Q1", "Q2", "Q3"], ["a", "b"], [["Q1", "b", "Q2"], ["Q1", "$", "Q3"], ["Q2", "a", "Q2"], ["Q2", "a", "Q3"], ["Q2", "b", "Q3"], ["Q3", "a", "Q1"]], ["Q1"], ["Q1"])
     with open(inp) as f:
         N = NFA(*json.load(f).values())
-    print(N.getRegex())
-    # with open(out, 'w+') as f:
-    #     json.dump(D.get_dict(), f, indent=4)
+    with open(out, 'w+') as f:
+        json.dump(N.get_regex(), f, indent=4)
 
 if __name__ == "__main__":
     main()
