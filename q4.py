@@ -2,6 +2,7 @@ import json
 import sys
 import os
 from os import popen
+from copy import deepcopy
 
 # ASSuminmg no e transitionss
 class NFA:
@@ -40,8 +41,39 @@ class NFA:
             if new_states == set():
                 break
         self.states = list(reachable_states)
-        print(self.states)
+        # print(self.states)
 
+    def minimise(self):
+        F = set(self.final_states)
+        Q = set(self.states)
+        P = [F, Q.difference(F)]
+        W = [F, Q.difference(F)]
+        while len(W):
+            A = W.pop()
+            Wcopy = deepcopy(W)
+            Pcopy = deepcopy(P)
+            for c in self.letters:
+                X = set()
+                for t in self.transition_function:
+                    if t[1] == c and t[2] in A:
+                        X.add(t[0])
+                for Y in P:
+                    if len(X.intersection(Y)) and len(Y.difference(X)):
+                        Pcopy.remove(Y)
+                        Pcopy.extend([X.intersection(Y), Y.difference(X)])
+                        if Y in W:
+                            Wcopy.remove(Y)
+                            Wcopy.extend([X.intersection(Y), Y.difference(X)])
+                        else:
+                            if len(X.intersection(Y)) <= len(Y.difference(X)):
+                                Wcopy.append(X.intersection(Y))
+                            else:
+                                Wcopy.append(Y.difference(X))
+
+                P = Pcopy
+                # print(P) 
+            W = Wcopy   
+        print(P) 
 def main():
     assert len(sys.argv) == 3, "invalid args"
     inp = sys.argv[1]
@@ -54,7 +86,7 @@ def main():
         N = NFA(*json.load(f).values())
     N.states.append("aman")
     N.remove_unreachable_states()
-
+    N.minimise()
 
 if __name__ == "__main__":
     main()

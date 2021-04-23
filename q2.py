@@ -46,7 +46,7 @@ def get_DFA_from_NFA(N):
     # mutation problems
     D = NFA() 
     P = list(powerset(N.states))
-    P.reverse()
+    P.reverse() # to get in lexicographical order
     D.states = [s for s in P]
     D.letters = N.letters
     assert len(N.start_states) == 1, "can't handle NFA with more than 1 start state"
