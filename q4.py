@@ -72,8 +72,37 @@ class NFA:
 
                 P = Pcopy
                 # print(P) 
-            W = Wcopy   
-        print(P) 
+            W = Wcopy 
+        self.states = []  
+        for s in P:
+            self.states.append(list(s))
+        trans_func = set()
+        for t in self.transition_function:
+            state1 = set(t[0])
+            state2 = set(t[2])
+            for s in P:
+                if len(s.intersection(state1)):
+                    state1 = s
+                    break
+            for s in P:
+                if len(s.intersection(state2)):
+                    state2 = s
+                    break
+            trans_func.add((tuple(state1), t[1], tuple(state2)))
+        self.transition_function = []
+        for t in trans_func:
+            self.transition_function.append([list(t[0]), t[1], list(t[2])])
+        self.start_states = set(self.start_states)
+        for s in P:
+            if len(s.intersection(self.start_states)):
+                self.start_states = [list(s)]
+                break
+        self.final_states = set(self.final_states)
+        for s in P:
+            if len(s.intersection(self.final_states)):
+                self.final_states = [list(s)]
+                break    
+
 def main():
     assert len(sys.argv) == 3, "invalid args"
     inp = sys.argv[1]
@@ -87,6 +116,8 @@ def main():
     N.states.append("aman")
     N.remove_unreachable_states()
     N.minimise()
+    with open(out, 'w+') as f:
+        json.dump(N.get_dict(), f, indent=4)
 
 if __name__ == "__main__":
     main()
